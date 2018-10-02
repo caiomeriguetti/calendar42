@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+uwsgi --py-autoreload 1 -T -p 5 --callable app --chdir /src/rest-api/code --http :80 --wsgi-file /src/rest-api/code/app.py
