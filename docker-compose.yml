@@ -1,13 +1,16 @@
 version: "2.2"
 services:
 
-  deploy-api:
+  rest-api:
     entrypoint: "/src/rest-api/entrypoint"
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - 8080:80
+    volumes:
+      - ".:/src"
+
     env_file:
       - ./rest-api/.env
 
@@ -24,4 +27,6 @@ services:
 
   geodb:
     image: mongo
+    volumes:
+      - "./mongodata:/data/db"
 

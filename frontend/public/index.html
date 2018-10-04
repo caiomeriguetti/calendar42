@@ -34,13 +34,21 @@
       // NOTE: This uses cross-domain XHR, and may not work on older browsers.
       map.data.loadGeoJson('arruamentoal.geojson');
 
-      var myLatLng = {lat:-9.846369685834715, lng:-35.903972667892042};
+      var points = [ [ -35.903972667892042, -9.846369685834715 ], [ -35.903935323572647, -9.846384403128385 ], [ -35.903895888040765, -9.846392066868745 ], [ -35.9038440370744, -9.846390807375 ], [ -35.903805452089031, -9.84638813381032 ], [ -35.903549042286123, -9.846373849456739 ] ];
 
-      var marker = new google.maps.Marker({
-        position: myLatLng,
-        map: map,
-        title: 'Hello World!'
-      });
+
+      for(var i=0; i<points.length; i++) {
+          var myLatLng = {lat:points[i][1], lng:points[i][0]};
+
+          var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            title: 'Hello World!'
+          });
+      }
+
+
+
       }
 
 
