@@ -9,7 +9,18 @@ services:
     ports:
       - 8080:80
     env_file:
-      - .env
+      - ./rest-api/.env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    ports:
+      - "8081:80"
+
+    volumes:
+      - "./frontend:/src"
 
   geodb:
     image: mongo
