@@ -1,50 +1,41 @@
 import math
 
-from db import default_db
+from repositories import FeaturesRepository, PointsRepository
+from street_graph import Graph, Point
 
 
-class Point(object):
-    def __init__(self, coords):
-        self.connections = {}
-        self.coords = coords
-        self.id = ':'.join([str(coords['lat']), str(coords['lng'])])
+class GeomService(object):
 
-    def connect(self, p):
-        p.connections[self.id] = self
-        self.connections[p.id] = p
+    def get_distance(self, p1, p2):
 
-    def equals(self, p):
-        return p.coords['lat'] == self.coords['lat'] and p.coords['lng'] == self.coords['lng']
+        lon1 = p1.coords['lng']
+        lon2 = p2.coords['lng']
 
+        lat1 = p1.coords['lat']
+        lat2 = p2.coords['lat']
 
-class Graph(object):
-    connections = None
-    costs = None
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
 
-    def __init__(self, connections, costs):
-        self.connections = connections
-        self.costs = costs
+        R = 6371e3;
 
-    def contains(self, p):
-        return p.id in self.connections
+        a = math.pow(math.sin(dlat / 2), 2) + math.cos(lat1) * math.cos(lat2) * math.pow((math.sin(dlon / 2)), 2)
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        d = R * c
+
+        return d
 
 
 class GraphService(object):
 
+    def __init__(self):
+        self.features_repo = FeaturesRepository()
+        self.points_repo = PointsRepository()
+        self.geom_service = GeomService()
+
     def get_nearest_point(self, point):
 
-        street_db = default_db()
-        points = street_db.points
-        nearest_point = points.find_one({'location': {'$near': {
-           '$geometry': {
-              'type': "Point" ,
-              'coordinates': [ point.coords['lng'] , point.coords['lat'] ]
-           },
-           '$maxDistance': 200000,
-           '$minDistance': 0
-        }}})
-
-        print nearest_point
+        nearest_point = self.points_repo.get_nearest_point(point)
 
         return Point({'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]})
 
@@ -60,8 +51,6 @@ class GraphService(object):
 
         if not graph.contains(end_point):
             end_point = self.get_nearest_point(end_point)
-
-        print graph.contains(start_point)
 
         connections = graph.connections
 
@@ -90,29 +79,9 @@ class GraphService(object):
 
                 queue.append((path, point))
 
-    def get_distance(self, p1, p2):
-
-        lon1 = p1.coords['lng']
-        lon2 = p2.coords['lng']
-
-        lat1 = p1.coords['lat']
-        lat2 = p2.coords['lat']
-
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-
-        R = 6371e3;
-
-        a = math.pow(math.sin(dlat / 2), 2) + math.cos(lat1) * math.cos(lat2) * math.pow((math.sin(dlon / 2)), 2)
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-        d = R * c
-
-        return d
-
     def build_graph(self):
-        street_db = default_db()
-        features = street_db.features
-        features_data = features.find()
+
+        features_data = self.features_repo.get_all_street_paths()
 
         connections = {}
         costs = {}
@@ -141,7 +110,7 @@ class GraphService(object):
                     if last_point.id not in costs:
                         costs[last_point.id] = {}
 
-                    distance = self.get_distance(last_point, p)
+                    distance = self.geom_service.get_distance(last_point, p)
 
                     connections[last_point.id][p.id] = p
                     connections[p.id][last_point.id] = last_point

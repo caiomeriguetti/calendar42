@@ -1,6 +1,6 @@
 import json
 import sys
-sys.path.append('.')
+sys.path.append('code')
 import db
 with open('geojson/arruamentoal.geojson', 'r') as f:
     geojson_data = json.loads(f.read())

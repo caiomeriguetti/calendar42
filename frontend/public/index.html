@@ -26,55 +26,62 @@
       // to create a rectangular polygon with 2 holes in it.
       var map;
       function initMap() {
+
+        line = null;
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
           center: {lat:-35.903972667892042, lng:-9.846369685834715}
         });
 
-      // NOTE: This uses cross-domain XHR, and may not work on older browsers.
-      map.data.loadGeoJson('arruamentoal.geojson');
+        function clear() {
+          if(line) {
+              line.setMap(null);
+          }
+        }
 
-      // var points = [ [ -35.747413635417345, -9.670366764554775 ], [ -35.747241991789402, -9.670975484369256 ], [ -35.747197586726706, -9.671128210019317 ],
-      //     [ -35.903972667892042, -9.846369685834715 ], [ -35.903935323572647, -9.846384403128385 ], [ -35.903895888040765, -9.846392066868745 ], [ -35.9038440370744, -9.846390807375 ], [ -35.903805452089031, -9.84638813381032 ], [ -35.903549042286123, -9.846373849456739 ],
-      // [ -35.753030286987837, -9.657958592801631 ], [ -35.75337994481486, -9.658388171934503 ], [ -35.753455501559593, -9.658482879983415 ]];
-      //
-      //
-      // for(var i=0; i<points.length; i++) {
-      //     var myLatLng = {lat:points[i][1], lng:points[i][0]};
-      //
-      //     var marker = new google.maps.Marker({
-      //       position: myLatLng,
-      //       map: map,
-      //       title: 'Hello World!'
-      //     });
-      // }
+      p1 = p2 = null;
 
       map.addListener('click', function(e) {
-        console.log(e.latLng['lat']());
-        console.log(e.latLng['lng']());
-      });
+        lat = e.latLng['lat']();
+        lng = e.latLng['lng']();
 
-      $(function (){
+        if(p1 != null && p2 != null) {
+            p1 = p2 = null;
+        }
+
+        if(p1 == null) {
+            p1 = {'lng': lng, 'lat': lat};
+        } else if (p2 == null) {
+            p2 = {'lng': lng, 'lat': lat};
+
+            clear();
+
 
           $.ajax({
-              url: "http://localhost:8081/places",
+              url: "http://localhost:8081/best-path/"+p1['lat']+","+p1['lng']+"/"+p2['lat']+","+p2['lng'],
               type: "get",
               success:function(a) {
 
-
-                  var flightPath = new google.maps.Polyline({
+                  line = new google.maps.Polyline({
                     path: a,
                     geodesic: true,
                     strokeColor: '#FF0000',
                     strokeOpacity: 1.0,
-                    strokeWeight: 10
+                    strokeWeight: 2
                   });
 
-                  flightPath.setMap(map);
+                  line.setMap(map);
               }, error:function(){
 
               }
           })
+
+
+        }
+      });
+
+      $(function (){
+
 
       })
 

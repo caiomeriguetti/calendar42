@@ -5,7 +5,7 @@ services:
     entrypoint: "/src/rest-api/entrypoint"
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: rest-api/Dockerfile
     ports:
       - 8080:80
     volumes:

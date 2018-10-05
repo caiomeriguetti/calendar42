@@ -11,4 +11,4 @@ RUN pip install falcon \
                 uwsgi \
                 pymongo
 
-COPY . /src
+COPY .. /src
