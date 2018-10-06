@@ -4,15 +4,15 @@ services:
   rest-api:
     entrypoint: "/src/rest-api/entrypoint"
     build:
-      context: ./rest-api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: python_env/Dockerfile
     ports:
       - 8080:80
     volumes:
       - ".:/src"
 
     env_file:
-      - ./rest-api/.env
+      - .env
 
   frontend:
     build:
@@ -29,4 +29,21 @@ services:
     image: mongo
     volumes:
       - "./mongodata:/data/db"
+    ports:
+      - 27017:27017
+
+  cachedb:
+    image: redis
+
+  geojson-loader:
+    command: ["ls"]
+    build:
+      context: .
+      dockerfile: python_env/Dockerfile
+    env_file:
+    - .env
+
+    volumes:
+      - .:/src
+
 

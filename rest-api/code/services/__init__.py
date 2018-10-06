@@ -1,18 +1,20 @@
+import json
 import math
 
+from db.cache import client
 from repositories import FeaturesRepository, PointsRepository
-from street_graph import Graph, Point
+from street_graph import Graph
 
 
 class GeomService(object):
 
     def get_distance(self, p1, p2):
 
-        lon1 = p1.coords['lng']
-        lon2 = p2.coords['lng']
+        lon1 = p1['lng']
+        lon2 = p2['lng']
 
-        lat1 = p1.coords['lat']
-        lat2 = p2.coords['lat']
+        lat1 = p1['lat']
+        lat2 = p2['lat']
 
         dlon = lon2 - lon1
         dlat = lat2 - lat1
@@ -37,14 +39,14 @@ class GraphService(object):
 
         nearest_point = self.points_repo.get_nearest_point(point)
 
-        return Point({'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]})
+        return {'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]}
 
     def get_maximun_path(self, start, end):
 
         graph = self.build_graph()
 
-        start_point = Point({'lat': start['lat'], 'lng': start['lng']})
-        end_point = Point({'lat': end['lat'], 'lng': end['lng']})
+        start_point = {'lat': start['lat'], 'lng': start['lng']}
+        end_point = {'lat': end['lat'], 'lng': end['lng']}
 
         if not graph.contains(start_point):
             start_point = self.get_nearest_point(start_point)
@@ -62,24 +64,35 @@ class GraphService(object):
             current_item = queue.pop(0)
             current_point = current_item[1]
 
-            if current_point.id in visited and visited[current_point.id] is True:
+            current_point_id = graph.get_id(current_point)
+
+            if current_point_id in visited and visited[current_point_id] is True:
                 continue
 
-            visited[current_point.id] = True
+            visited[current_point_id] = True
 
             current_path = current_item[0]
 
-            for conn in connections[current_point.id].keys():
-                point = connections[current_point.id][conn]
-                path = current_path + [point.coords]
+            for conn in connections[current_point_id].keys():
+                point = connections[current_point_id][conn]
+                path = current_path + [point]
 
-                if point.equals(end_point):
+                if graph.equals(point, end_point):
                     # path found
                     return path
 
                 queue.append((path, point))
 
     def build_graph(self):
+
+        cachedb = client()
+        cached_graph = cachedb.exists('graph_cache')
+
+        if cached_graph:
+            connections = json.loads(cachedb.hget('graph_cache', 'connections'))
+            costs = json.loads(cachedb.hget('graph_cache', 'costs'))
+
+            return Graph(connections, costs)
 
         features_data = self.features_repo.get_all_street_paths()
 
@@ -92,33 +105,44 @@ class GraphService(object):
             # find intersections
             last_point = None
 
+            graph = Graph()
+
             for coord in coords:
-                p = Point(coord)
+                p = coord
 
                 if last_point:
-                    last_point.connect(p)
 
-                    if last_point.id not in connections:
-                        connections[last_point.id] = {}
+                    last_id = graph.get_id(last_point)
+                    p_id = graph.get_id(p)
 
-                    if p.id not in connections:
-                        connections[p.id] = {}
+                    if last_id not in connections:
+                        connections[last_id] = {}
 
-                    if p.id not in costs:
-                        costs[p.id] = {}
+                    if p_id not in connections:
+                        connections[p_id] = {}
 
-                    if last_point.id not in costs:
-                        costs[last_point.id] = {}
+                    if p_id not in costs:
+                        costs[p_id] = {}
+
+                    if last_id not in costs:
+                        costs[last_id] = {}
 
                     distance = self.geom_service.get_distance(last_point, p)
 
-                    connections[last_point.id][p.id] = p
-                    connections[p.id][last_point.id] = last_point
+                    connections[last_id][p_id] = p
+                    connections[p_id][last_id] = last_point
 
-                    costs[last_point.id][p.id] = distance
-                    costs[p.id][last_point.id] = distance
+                    costs[last_id][p_id] = distance
+                    costs[p_id][last_id] = distance
 
                 last_point = p
 
-        return Graph(connections, costs)
+
+        graph.set_connections(connections)
+        graph.set_costs(costs)
+
+        cachedb.hset('graph_cache', 'connections', json.dumps(connections))
+        cachedb.hset('graph_cache', 'costs', json.dumps(costs))
+
+        return graph
 

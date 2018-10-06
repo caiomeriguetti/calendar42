@@ -9,6 +9,9 @@ RUN apt-get update \
 
 RUN pip install falcon \
                 uwsgi \
-                pymongo
+                pymongo \
+                redis
 
-COPY .. /src
+COPY . /src
+
+WORKDIR /src

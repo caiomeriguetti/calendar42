@@ -2,23 +2,24 @@ class Graph(object):
     connections = None
     costs = None
 
-    def __init__(self, connections, costs):
+    def __init__(self, connections=None, costs=None):
         self.connections = connections
         self.costs = costs
 
+    def set_connections(self, connections):
+        self.connections = connections
+
+    def set_costs(self, costs):
+        self.costs = costs
+
     def contains(self, p):
-        return p.id in self.connections
 
+        id = self.get_id(p)
 
-class Point(object):
-    def __init__(self, coords):
-        self.connections = {}
-        self.coords = coords
-        self.id = ':'.join([str(coords['lat']), str(coords['lng'])])
+        return id in self.connections
 
-    def connect(self, p):
-        p.connections[self.id] = self
-        self.connections[p.id] = p
+    def get_id(self, p):
+        return '%s:%s' % (p['lat'], p['lng'])
 
-    def equals(self, p):
-        return p.coords['lat'] == self.coords['lat'] and p.coords['lng'] == self.coords['lng']
+    def equals(self, p1, p2):
+        return p1['lat'] == p2['lat'] and p1['lng'] == p2['lng']
