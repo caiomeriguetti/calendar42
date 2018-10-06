@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import falcon
 from falcon_extensions import Request
-from resources import PlacesResource
+from routes import add_routes
 
-app = falcon.API(request_type=Request)
-app.add_route('/best-path/{p1}/{p2}', PlacesResource())
+api = falcon.API(request_type=Request)
+
+add_routes(api)
 

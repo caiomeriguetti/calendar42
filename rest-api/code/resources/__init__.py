@@ -3,7 +3,7 @@ import json
 from services import GraphService
 
 
-class PlacesResource(object):
+class PathResource(object):
 
     def on_get(self, req, resp, p1, p2):
 
