@@ -27,63 +27,124 @@
       var map;
       function initMap() {
 
-        line = null;
+        var lines = [];
+        var markers = [];
+
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
           center: {lat:-35.903972667892042, lng:-9.846369685834715}
         });
 
         function clear() {
-          if(line) {
-              line.setMap(null);
-          }
+
+            for(var i = 0; i < lines.length; i++){
+                var line = lines[i];
+                line.setMap(null);
+            }
+
+
         }
 
-      p1 = p2 = null;
+        function clearMarkers() {
 
-      map.addListener('click', function(e) {
-        lat = e.latLng['lat']();
-        lng = e.latLng['lng']();
-
-        if(p1 != null && p2 != null) {
-            p1 = p2 = null;
+            for(var i = 0; i < markers.length; i++){
+                var marker = markers[i];
+                marker.setMap(null);
+            }
         }
 
-        if(p1 == null) {
-            p1 = {'lng': lng, 'lat': lat};
-        } else if (p2 == null) {
-            p2 = {'lng': lng, 'lat': lat};
+        var points = [];
 
-            clear();
+        var recording = false;
+
+        google.maps.event.addDomListener(document, 'keyup', function (e) {
+
+            var code = (e.keyCode ? e.keyCode : e.which);
+
+            if(code == 13 && recording == false){
+                recording = true;
+                clearMarkers();
+                clear();
+
+                console.log('RECORDING... CLICK ON THE PLACES YOU NEED TO GO');
+
+            } else if (code == 13 && recording == true) {
+
+                console.log('CALCULATING PATH');
+
+                //enter
+
+              clear();
+
+              recording = false;
+
+              for(var i = 1; i < points.length; i++){
+
+                  var p1 = points[i-1];
+                  var p2 = points[i];
 
 
-          $.ajax({
-              url: "http://localhost:8081/best-path/"+p1['lat']+","+p1['lng']+"/"+p2['lat']+","+p2['lng'],
-              type: "get",
-              success:function(a) {
+                  $.ajax({
+                      url: "http://localhost:8081/best-path/"+p1['lat']+","+p1['lng']+"/"+p2['lat']+","+p2['lng'],
+                      type: "get",
+                      success:function(a) {
 
-                  line = new google.maps.Polyline({
-                    path: a,
-                    geodesic: true,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2
-                  });
+                          var line = new google.maps.Polyline({
+                            path: a,
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 1.0,
+                            strokeWeight: 2
+                          });
 
-                  line.setMap(map);
-              }, error:function(){
+                          line.setMap(map);
+
+                          lines.push(line);
+
+                      }, error:function(){
+
+                      }
+                  })
 
               }
-          })
+
+              points = [];
 
 
-        }
-      });
-
-      $(function (){
+            }
 
 
-      })
+        });
+
+        map.addListener('click', function(e) {
+
+          if(!recording) {
+              return;
+          }
+
+          var lat = e.latLng['lat']();
+          var lng = e.latLng['lng']();
+
+          var clicked_point = {'lng': lng, 'lat': lat};
+
+          points.push(clicked_point);
+
+          var marker = new google.maps.Marker({
+            position: clicked_point,
+            map: map,
+            title: 'Hello World!'
+          });
+
+          markers.push(marker);
+
+          console.log(points);
+
+        });
+
+        $(function (){
+
+
+        })
 
 
       }
