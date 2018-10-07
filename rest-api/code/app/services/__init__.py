@@ -1,8 +1,8 @@
 import json
 import math
 
-from db.cache import client
-from repositories import FeaturesRepository, PointsRepository
+from app.db import client
+from app.repositories import FeaturesRepository, PointsRepository
 from street_graph import Graph
 
 
@@ -31,6 +31,7 @@ class GeomService(object):
 class GraphService(object):
 
     def __init__(self):
+
         self.features_repo = FeaturesRepository()
         self.points_repo = PointsRepository()
         self.geom_service = GeomService()
@@ -38,6 +39,24 @@ class GraphService(object):
     def get_nearest_point(self, point):
 
         return self.points_repo.get_nearest_point(point)
+
+    def get_full_path(self, graph, points):
+
+        full_path = []
+        extra_points = []
+
+        for i in range(1, len(points)):
+
+            start = points[i - 1]
+            end = points[i]
+
+            longer_path = self.get_longer_path(graph, start, end)
+            path = longer_path['path']
+            extra_points.append(longer_path['extra_point'])
+
+            full_path += path
+
+        return {'full_path': full_path, 'extra_points': extra_points}
 
     def get_path(self, graph, start_point, end_point):
 
@@ -138,7 +157,6 @@ class GraphService(object):
                     costs[p_id][last_id] = distance
 
                 last_point = p
-
 
         graph.set_connections(connections)
         graph.set_costs(costs)

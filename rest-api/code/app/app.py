@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import falcon
 from falcon_extensions import Request
-from routes import add_routes
+from app.routes import add_routes
 
 
 class StreetPathFinderApp(falcon.API):

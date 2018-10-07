@@ -1,4 +1,4 @@
-from db import default_db
+from app.db import default_db
 
 
 class FeaturesRepository(object):

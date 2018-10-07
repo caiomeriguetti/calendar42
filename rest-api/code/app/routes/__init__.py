@@ -1,4 +1,4 @@
-from resources import PathResource
+from app.resources import PathResource
 
 
 def add_routes(api):

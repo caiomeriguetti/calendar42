@@ -1,9 +1,9 @@
 import json
 import sys
 sys.path.append('/src/rest-api/code')
-from pymongo import GEO2D, GEOSPHERE
+from pymongo import GEOSPHERE
 
-import db
+from app import db
 
 with open('geojson_loader/arruamentoal.geojson', 'r') as f:
     geojson_data = json.loads(f.read())
