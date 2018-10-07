@@ -1,7 +1,7 @@
 import json
 import math
 
-from app.db import client
+from app.db import client, cache
 from app.repositories import FeaturesRepository, PointsRepository
 from app.models import Graph
 
@@ -104,9 +104,9 @@ class GraphService(object):
 
         return {'path': path1 + path2, 'extra_point': farthest_point}
 
-    def build_graph(self):
+    def _check_cache(self):
 
-        cachedb = client()
+        cachedb = cache.client()
         cached_graph = cachedb.exists('graph_cache')
 
         if cached_graph:
@@ -114,6 +114,15 @@ class GraphService(object):
             costs = json.loads(cachedb.hget('graph_cache', 'costs'))
 
             return Graph(connections, costs)
+
+        return None
+
+    def build_graph(self):
+
+        cached_graph = self._check_cache()
+
+        if cached_graph:
+            return cached_graph
 
         features_data = self.features_repo.get_all_street_paths()
 
