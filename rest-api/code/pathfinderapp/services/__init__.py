@@ -1,9 +1,9 @@
 import json
 import math
 
-from app.db import client, cache
-from app.repositories import FeaturesRepository, PointsRepository
-from app.models import Graph
+from pathfinderapp.db import client, cache
+from pathfinderapp.repositories import FeaturesRepository, PointsRepository
+from pathfinderapp.models import Graph
 
 
 class GeomService(object):

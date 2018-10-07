@@ -3,7 +3,7 @@ import sys
 sys.path.append('/src/rest-api/code')
 from pymongo import GEOSPHERE
 
-from app import db
+from pathfinderapp import db
 
 with open('geojson_loader/arruamentoal.geojson', 'r') as f:
     geojson_data = json.loads(f.read())

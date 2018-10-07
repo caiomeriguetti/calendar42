@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import falcon
 
-from app.routes import main_routes
+from pathfinderapp.routes import main_routes
 from falcon_extensions import Request
 
 

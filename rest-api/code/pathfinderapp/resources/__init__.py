@@ -1,6 +1,6 @@
 import falcon
 import json
-from app.services import GraphService
+from pathfinderapp.services import GraphService
 
 
 class PathResource(object):

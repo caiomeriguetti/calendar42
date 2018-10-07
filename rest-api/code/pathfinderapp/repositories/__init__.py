@@ -1,4 +1,4 @@
-from app.db import default_db
+from pathfinderapp.db import default_db
 
 
 class FeaturesRepository(object):

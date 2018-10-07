@@ -1,6 +1,6 @@
 from falcon import testing
 
-from app.app import StreetPathFinderApp
+from pathfinderapp.app import StreetPathFinderApp
 
 
 class StreetApiTest(testing.TestCase):
@@ -19,5 +19,6 @@ class PathTestCase(StreetApiTest):
 
         json_data = result.json
 
-        self.assertEqual(json_data[666], {'lat': -9.572272621655625, 'lng': -35.71018427884466})
-        self.assertEqual(json_data[400], {'lat': -9.573223536957677, 'lng': -35.76904104845525})
+        self.assertEqual(json_data['extra_points'][0], {'lat': -9.689855085943641, 'lng': -35.769740509888685})
+        self.assertEqual(json_data['full_path'][200], {'lat': -9.639730424688105, 'lng': -35.73542051131252})
+        self.assertEqual(json_data['full_path'][500], {'lat': -9.548899442727883, 'lng': -35.731854499586156})
