@@ -3,7 +3,7 @@ import math
 
 from app.db import client
 from app.repositories import FeaturesRepository, PointsRepository
-from street_graph import Graph
+from app.models import Graph
 
 
 class GeomService(object):
@@ -36,10 +36,6 @@ class GraphService(object):
         self.points_repo = PointsRepository()
         self.geom_service = GeomService()
 
-    def get_nearest_point(self, point):
-
-        return self.points_repo.get_nearest_point(point)
-
     def get_full_path(self, graph, points):
 
         full_path = []
@@ -60,13 +56,17 @@ class GraphService(object):
 
     def get_path(self, graph, start_point, end_point):
 
+        # normalization of start and end points so that they become a point that exists in the database
+
         if not graph.contains(start_point):
-            start_point = self.get_nearest_point(start_point)
+            start_point = self.points_repo.get_nearest_point(start_point)
 
         if not graph.contains(end_point):
-            end_point = self.get_nearest_point(end_point)
+            end_point = self.points_repo.get_nearest_point(end_point)
 
         connections = graph.connections
+
+        # walking through the graph to find a path
 
         queue = [([], start_point)]
         visited = {}
