@@ -13,13 +13,17 @@ the app is composed by a frontend and a rest api. in the project root just run
 
 ```docker-compose up -d --force-recreate --build```
 
-the focus of the app is on backend. Therefore, i didnt care about frontend code because i didnt have enought time to do so. 
+the focus of the app is on backend. Therefore, i didnt care about frontend code because i didnt have enought time to do so.
+
+There is a geojson_loader app to load geojson data into mongo database 
 
 # how to load the data into database 
 
 just run 
 
 ```./load_db.sh```
+
+the geojson data is for Alagoas state in Brazil.
 
 # pathfinder
 
