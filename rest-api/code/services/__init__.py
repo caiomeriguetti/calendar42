@@ -41,9 +41,7 @@ class GraphService(object):
 
         return {'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]}
 
-    def get_maximun_path(self, start, end):
-
-        graph = self.build_graph()
+    def get_maximun_path(self, graph, start, end):
 
         start_point = {'lat': start['lat'], 'lng': start['lng']}
         end_point = {'lat': end['lat'], 'lng': end['lng']}

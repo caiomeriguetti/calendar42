@@ -3,7 +3,16 @@ import falcon
 from falcon_extensions import Request
 from routes import add_routes
 
-api = falcon.API(request_type=Request)
 
-add_routes(api)
+class StreetPathFinderApp(falcon.API):
+
+    def __init__(self, *args, **kwargs):
+
+        super(StreetPathFinderApp, self).__init__(request_type=Request, *args, **kwargs)
+
+        add_routes(self)
+
+
+app = StreetPathFinderApp()
+
 

@@ -74,41 +74,38 @@
 
                 //enter
 
-              clear();
+                clear();
 
-              recording = false;
+                recording = false;
+                var points_param = [];
+                for(var i = 0; i < points.length; i++) {
+                    var p = points[i];
+                    points_param.push(p['lat'] + "," + p['lng']);
+                }
 
-              for(var i = 1; i < points.length; i++){
+                $.ajax({
+                    url: "http://localhost:8081/best-path/"+points_param.join(';'),
+                    type: "get",
+                    success:function(a) {
 
-                  var p1 = points[i-1];
-                  var p2 = points[i];
+                        var line = new google.maps.Polyline({
+                          path: a,
+                          geodesic: true,
+                          strokeColor: '#FF0000',
+                          strokeOpacity: 1.0,
+                          strokeWeight: 2
+                        });
 
+                        line.setMap(map);
 
-                  $.ajax({
-                      url: "http://localhost:8081/best-path/"+p1['lat']+","+p1['lng']+"/"+p2['lat']+","+p2['lng'],
-                      type: "get",
-                      success:function(a) {
+                        lines.push(line);
 
-                          var line = new google.maps.Polyline({
-                            path: a,
-                            geodesic: true,
-                            strokeColor: '#FF0000',
-                            strokeOpacity: 1.0,
-                            strokeWeight: 2
-                          });
+                    }, error:function(){
 
-                          line.setMap(map);
+                    }
+                })
 
-                          lines.push(line);
-
-                      }, error:function(){
-
-                      }
-                  })
-
-              }
-
-              points = [];
+                points = [];
 
 
             }
@@ -127,6 +124,8 @@
 
           var clicked_point = {'lng': lng, 'lat': lat};
 
+          console.log(clicked_point);
+
           points.push(clicked_point);
 
           var marker = new google.maps.Marker({
@@ -140,6 +139,8 @@
           console.log(points);
 
         });
+
+        //map.setCenter();
 
         $(function (){
 
