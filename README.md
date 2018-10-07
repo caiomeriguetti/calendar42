@@ -25,6 +25,6 @@ the rest-api exposes an endpoint for calculating a path that contains N points
 
 ```/best-path/lat1,lng1;...;latN,lngN```
 
-also the calculated path contains extra points(green markers) since jane like to meet new places
+the red markers represent the places Jane must go to deliver letters and the green ones are extra points since jane like to meet new places
 
 
