@@ -29,6 +29,7 @@
 
         var lines = [];
         var markers = [];
+        var extra_markers = [];
 
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
@@ -54,7 +55,6 @@
         }
 
         var points = [];
-
         var recording = false;
 
         google.maps.event.addDomListener(document, 'keyup', function (e) {
@@ -89,7 +89,7 @@
                     success:function(a) {
 
                         var line = new google.maps.Polyline({
-                          path: a,
+                          path: a['full_path'],
                           geodesic: true,
                           strokeColor: '#FF0000',
                           strokeOpacity: 1.0,
@@ -99,6 +99,21 @@
                         line.setMap(map);
 
                         lines.push(line);
+
+                        for(var i=0; i<a['extra_points'].length; i++){
+
+                            extra_markers.push(marker);
+
+                            var marker = new google.maps.Marker({
+                              position: a['extra_points'][i],
+                              icon: 'extra_point_marker.png',
+                              map: map,
+                              title: 'Hello World!'
+                            });
+
+                            markers.push(marker);
+
+                        }
 
                     }, error:function(){
 

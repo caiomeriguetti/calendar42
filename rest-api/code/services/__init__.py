@@ -37,14 +37,9 @@ class GraphService(object):
 
     def get_nearest_point(self, point):
 
-        nearest_point = self.points_repo.get_nearest_point(point)
+        return self.points_repo.get_nearest_point(point)
 
-        return {'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]}
-
-    def get_maximun_path(self, graph, start, end):
-
-        start_point = {'lat': start['lat'], 'lng': start['lng']}
-        end_point = {'lat': end['lat'], 'lng': end['lng']}
+    def get_path(self, graph, start_point, end_point):
 
         if not graph.contains(start_point):
             start_point = self.get_nearest_point(start_point)
@@ -80,6 +75,15 @@ class GraphService(object):
                     return path
 
                 queue.append((path, point))
+
+    def get_longer_path(self, graph, start_point, end_point):
+
+        farthest_point = self.points_repo.get_farthest_point(start_point)
+
+        path1 = self.get_path(graph, start_point, farthest_point)
+        path2 = self.get_path(graph, farthest_point, end_point)
+
+        return {'path': path1 + path2, 'extra_point': farthest_point}
 
     def build_graph(self):
 

@@ -14,6 +14,17 @@ the app is composed by a frontend and a rest api. in the project root just run
 ```docker-compose up -d --force-recreate --build```
 
 # how to load the data into database 
+
 just run 
 
 ```./load_db.sh```
+
+# pathfinder
+
+the rest-api exposes an endpoint for calculating a path that contains N points
+
+```/best-path/lat1,lng1;...;latN,lngN```
+
+also the calculated path contains extra points(green markers) since jane like to meet new places
+
+

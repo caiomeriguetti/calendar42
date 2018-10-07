@@ -23,7 +23,7 @@ class PointsRepository(object):
             '$minDistance': 0
         }}})
 
-        return nearest_point
+        return {'lng': nearest_point['location']['coordinates'][0], 'lat': nearest_point['location']['coordinates'][1]}
 
     def get_farthest_point(self, point):
         street_db = default_db()
@@ -33,11 +33,11 @@ class PointsRepository(object):
                 'type': "Point",
                 'coordinates': [point['lng'], point['lat']]
             },
-            '$maxDistance': 500,
-            '$minDistance': 0
+            '$maxDistance': 2500,
+            '$minDistance': 1500
         }}})
 
-        return farthest_point
+        return {'lng': farthest_point['location']['coordinates'][0], 'lat': farthest_point['location']['coordinates'][1]}
 
 
 
