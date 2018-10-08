@@ -2,6 +2,7 @@ version: "2.2"
 services:
 
   rest-api:
+    restart: unless-stopped
     entrypoint: "/src/rest-api/entrypoint"
     build:
       context: .
@@ -15,6 +16,7 @@ services:
       - .env
 
   frontend:
+    restart: unless-stopped
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -22,10 +24,8 @@ services:
     ports:
       - "8081:80"
 
-    volumes:
-      - "./frontend:/src"
-
   geodb:
+    restart: unless-stopped
     image: mongo
     volumes:
       - "./mongodata:/data/db"

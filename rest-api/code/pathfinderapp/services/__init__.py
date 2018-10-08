@@ -119,6 +119,8 @@ class GraphService(object):
 
     def build_graph(self):
 
+        cachedb = cache.client()
+
         cached_graph = self._check_cache()
 
         if cached_graph:

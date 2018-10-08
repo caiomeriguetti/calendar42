@@ -15,7 +15,10 @@ the app is composed by a frontend and a rest api. in the project root just run
 
 the focus of the app is on backend. Therefore, i didnt care about frontend code because i didnt have enought time to do so.
 
-There is a geojson_loader app to load geojson data into mongo database 
+There is a geojson_loader app to load geojson data into mongo database
+
+Frontend endpoint: http://localhost:8081/
+Api endpoint: http://localhost:8080/ 
 
 # how to load the data into database 
 
