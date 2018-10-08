@@ -20,6 +20,8 @@ There is a geojson_loader app to load geojson data into mongo database
 Frontend endpoint: http://localhost:8081/
 Api endpoint: http://localhost:8080/ 
 
+Before start, you need to load geojson data into mongodb
+
 # how to load the data into database 
 
 just run 
